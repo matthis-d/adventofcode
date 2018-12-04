@@ -78,7 +78,14 @@ const getSleepingTime = sequence =>
   sequence.sleeps.reduce((sum, sleep) => sum + sleep[1] - sleep[0], 0);
 
 const isMinuteInInterval = (minute, interval) =>
-  interval[0] <= minute && minute <= interval[1];
+  interval[0] <= minute && minute < interval[1];
+
+const getMaxElement = (list, key) =>
+  list.reduce(
+    (maxElement, element) =>
+      element[key] > maxElement[key] ? element : maxElement,
+    { [key]: 0 }
+  );
 
 const getSleepiestMinute = guardSequencies => {
   const sleepingIntervals = [].concat(
@@ -98,10 +105,7 @@ const getSleepiestMinute = guardSequencies => {
     });
   }
 
-  return stats.reduce(
-    (maxStat, stat) => (stat.count > maxStat.count ? stat : maxStat),
-    { count: 0 }
-  ).minute;
+  return getMaxElement(stats, 'count').minute;
 };
 
 const findMostSleepingGuard = entries => {
@@ -110,26 +114,16 @@ const findMostSleepingGuard = entries => {
     .map(seq => seq.id)
     .filter((id, index, array) => array.indexOf(id) === index);
 
-  const stats = guardIds.reduce((acc, id) => {
+  const stats = guardIds.map(id => {
     const guardSequencies = sequences.filter(seq => seq.id === id);
+    return {
+      id,
+      time: guardSequencies.reduce((sum, seq) => sum + getSleepingTime(seq), 0),
+      minute: getSleepiestMinute(guardSequencies),
+    };
+  });
 
-    return [
-      ...acc,
-      {
-        id,
-        time: guardSequencies.reduce(
-          (sum, seq) => sum + getSleepingTime(seq),
-          0
-        ),
-        minute: getSleepiestMinute(guardSequencies),
-      },
-    ];
-  }, []);
-
-  return stats.reduce(
-    (sleepiest, guard) => (guard.time > sleepiest.time ? guard : sleepiest),
-    { time: 0 }
-  );
+  return getMaxElement(stats, 'time');
 };
 
 module.exports = {
