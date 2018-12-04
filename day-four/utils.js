@@ -126,10 +126,74 @@ const findMostSleepingGuard = entries => {
   return getMaxElement(stats, 'time');
 };
 
+const getSleepingMinutes = sequence =>
+  sequence.sleeps.reduce((acc, sleep) => {
+    let result = [...acc];
+    for (let minute = sleep[0]; minute < sleep[1]; minute++) {
+      result.push(minute);
+    }
+    return result;
+  }, []);
+
+const getGuardStat = (guardId, minutesStats) => {
+  const stat = {};
+  for (let minute = 0; minute < 60; minute++) {
+    stat[minute] = (minutesStats[minute] || []).filter(
+      id => id === guardId
+    ).length;
+  }
+  return stat;
+};
+
+const getGuardIds = sequences =>
+  sequences
+    .map(seq => seq.id)
+    .filter((id, index, array) => array.indexOf(id) === index);
+
+const findSleepiestMinuteForGuard = entries => {
+  const sequencies = getSequences(entries);
+  const minutesStats = sequencies.reduce((acc, sequence) => {
+    const minutes = getSleepingMinutes(sequence);
+    for (let minute of minutes) {
+      acc = {
+        ...acc,
+        [minute]: [...(acc[minute] || []), sequence.id],
+      };
+    }
+    return acc;
+  }, {});
+
+  return getGuardIds(sequencies).reduce(
+    (acc, id) => {
+      const stats = getGuardStat(id, minutesStats);
+      const mostSleepedMinute = Object.keys(stats).reduce(
+        (result, minute) => {
+          if (stats[minute] > result.count) {
+            return {
+              count: stats[minute],
+              id,
+              minute: parseInt(minute),
+            };
+          }
+          return result;
+        },
+        { count: 0 }
+      );
+      if (mostSleepedMinute.count > acc.count) {
+        return mostSleepedMinute;
+      }
+      return acc;
+    },
+    { count: 0 }
+  );
+};
+
 module.exports = {
   getEntries,
   sortEntries,
   getConvertedLog,
   getSequences,
+  getSleepingMinutes,
   findMostSleepingGuard,
+  findSleepiestMinuteForGuard,
 };
