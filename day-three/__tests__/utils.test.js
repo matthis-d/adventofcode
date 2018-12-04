@@ -1,4 +1,9 @@
-const { getPosition, drawPositions, countConflicts } = require('../utils');
+const {
+  getPosition,
+  drawPositions,
+  countConflicts,
+  getNotConflictedPositionId,
+} = require('../utils');
 
 describe('getPosition', () => {
   test('#123 @ 3,2: 5x4', () => {
@@ -41,5 +46,14 @@ describe('countConflicts', () => {
     .######.
     ........`)
     ).toEqual(4);
+  });
+});
+
+describe('getNotConflictedPositionId', () => {
+  test('with the example input', () => {
+    const entries = ['#1 @ 1,3: 4x4', '#2 @ 3,1: 4x4', '#3 @ 5,5: 2x2'];
+    const size = 8;
+    const notConflicted = getNotConflictedPositionId(entries, size);
+    expect(notConflicted).toEqual('3');
   });
 });

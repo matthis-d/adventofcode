@@ -24,55 +24,50 @@ const initTable = (size = 1000) => {
   return table;
 };
 
-const drawPositions = (entries, size = 1000) => {
-  const table = initTable(size);
-  const positions = entries.map(getPosition);
-  positions.forEach(({ x, y, width, height }) => {
-    for (let j = y; j < y + height; j++) {
-      for (let i = x; i < x + width; i++) {
-        table[j][i] = table[j][i] === '.' ? '#' : 'X';
-      }
+const drawPosition = (position, table, defaultSymbol = '#') => {
+  const { x, y, width, height } = position;
+  for (let j = y; j < y + height; j++) {
+    for (let i = x; i < x + width; i++) {
+      table[j][i] = table[j][i] === '.' ? defaultSymbol : 'X';
     }
-  });
+  }
   return table;
 };
 
-const willConflict = (table, position) => {
-  return table
-    .filter(
-      (line, index) =>
-        position.y <= index && index < position.y + position.height
-    )
-    .some(line =>
-      line
-        .filter(
-          (elem, idx) => position.x <= idx && idx < position.x + position.width
-        )
-        .some(elem => elem !== '.')
-    );
+const getSurface = position => {
+  return position.height * position.width;
 };
 
-const getNotConflictedPositionId = (entries, size = 1000) => {
+const drawPositions = (entries, size = 1000, getDefaultSymbol = () => '#') => {
   const table = initTable(size);
   const positions = entries.map(getPosition);
-  let result;
-  positions.forEach(({ id, x, y, width, height }) => {
-    const character = willConflict(table, { x, y, width, height }) ? 'X' : id;
-    for (let j = y; j < y + height; j++) {
-      for (let i = x; i < x + width; i++) {
-        table[j][i] = character;
-      }
-    }
-
-    if (character === id) {
-      result = id;
-    }
-  });
-  return result;
+  return positions.reduce(
+    (prevTable, position) =>
+      drawPosition(position, prevTable, getDefaultSymbol(position)),
+    table
+  );
 };
 
-const countConflicts = output =>
-  output.split('').filter(letter => letter === 'X').length;
+const countSymbolInArray = symbol => array =>
+  array.filter(letter => letter === symbol).length;
+
+const countSymbol = symbol => output =>
+  countSymbolInArray(symbol)(output.split(''));
+
+const countConflicts = countSymbol('X');
+
+const getNotConflictedPositionId = (entries, size) => {
+  const positions = entries.map(getPosition);
+  const generatedTable = drawPositions(entries, size, position => position.id);
+  const inlineArray = [].concat(...generatedTable.map(line => line));
+
+  const notConflictedPos = positions.find(
+    position =>
+      countSymbolInArray(position.id)(inlineArray) === getSurface(position)
+  );
+
+  return notConflictedPos.id;
+};
 
 const getEntries = filename => {
   return new Promise((resolve, reject) => {

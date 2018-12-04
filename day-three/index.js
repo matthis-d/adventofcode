@@ -17,6 +17,6 @@ getEntries('./input.txt')
 getEntries('./input.txt')
   .then(entries => {
     const id = getNotConflictedPositionId(entries);
-    console.log(`No confliced id is ${id}`);
+    console.log(`Not conflicted id is ${id}`);
   })
   .catch(console.error);
