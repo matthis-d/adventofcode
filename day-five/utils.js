@@ -44,13 +44,8 @@ const findShortestCleanup = input => {
     .filter((letter, index, array) => array.indexOf(letter) === index)
     .sort()
     .map(letter => removeLetter(input, letter))
-    .map(line => cleanup(line))
-    .reduce((acc, line) => {
-      if (line.length < acc.length) {
-        return line;
-      }
-      return acc;
-    });
+    .map(cleanup)
+    .reduce((acc, line) => (line.length < acc.length ? line : acc));
 };
 
 module.exports = {
