@@ -1,4 +1,10 @@
-const { canBeDeleted, cleanupLine, cleanup } = require('../utils');
+const {
+  canBeDeleted,
+  cleanupLine,
+  cleanup,
+  removeLetter,
+  findShortestCleanup,
+} = require('../utils');
 
 describe('canBeDeleted', () => {
   it('should return true with a and A', () => {
@@ -25,5 +31,17 @@ describe('cleanupLine', () => {
 describe('cleanup', () => {
   it('should completely cleanup the input', () => {
     expect(cleanup('dabAcCaCBAcCcaDA')).toEqual('dabCBAcaDA');
+  });
+});
+
+describe('removeLetter', () => {
+  it('should remove all occurences of a or A', () => {
+    expect(removeLetter('dabAcCaCBAcCcaDA', 'a')).toEqual('dbcCCBcCcD');
+  });
+});
+
+describe('findShortestCleanup', () => {
+  it('should return daDA', () => {
+    expect(findShortestCleanup('dabAcCaCBAcCcaDA')).toEqual('daDA');
   });
 });

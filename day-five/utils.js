@@ -28,8 +28,35 @@ const cleanup = line => {
   return input;
 };
 
+const removeLetter = (input, letter) => {
+  return input
+    .split('')
+    .filter(ltr => {
+      return ltr.toLowerCase() !== letter.toLowerCase();
+    })
+    .join('');
+};
+
+const findShortestCleanup = input => {
+  return input
+    .split('')
+    .map(letter => letter.toLowerCase())
+    .filter((letter, index, array) => array.indexOf(letter) === index)
+    .sort()
+    .map(letter => removeLetter(input, letter))
+    .map(line => cleanup(line))
+    .reduce((acc, line) => {
+      if (line.length < acc.length) {
+        return line;
+      }
+      return acc;
+    });
+};
+
 module.exports = {
   canBeDeleted,
   cleanupLine,
   cleanup,
+  removeLetter,
+  findShortestCleanup,
 };
