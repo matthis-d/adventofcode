@@ -1,11 +1,14 @@
-const {
+import * as path from 'path';
+import {
   getEntries,
   sortEntries,
   findMostSleepingGuard,
   findSleepiestMinuteForGuard,
-} = require('./utils');
+} from './utils';
 
-getEntries('./input.txt')
+const inputPath = path.resolve(__dirname, '../input.txt');
+
+getEntries(inputPath)
   .then(entries => {
     const sortedEntries = sortEntries(entries);
     const sleepiest = findMostSleepingGuard(sortedEntries);
@@ -15,7 +18,7 @@ getEntries('./input.txt')
   })
   .catch(console.error);
 
-getEntries('./input.txt')
+getEntries(inputPath)
   .then(entries => {
     const sortedEntries = sortEntries(entries);
     const sleepiest = findSleepiestMinuteForGuard(sortedEntries);
