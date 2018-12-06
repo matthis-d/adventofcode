@@ -5,6 +5,7 @@ import {
   findClosestPosition,
   getFiniteSurfacesIds,
   getWidestSurface,
+  getCloseToOthersPositionsCount,
 } from '../utils';
 
 describe('day 6', () => {
@@ -69,5 +70,9 @@ describe('day 6', () => {
 
   test('getWidestSurface', () => {
     expect(getWidestSurface(input)).toEqual(17);
+  });
+
+  test('getCloseToOthersPositionsCount', () => {
+    expect(getCloseToOthersPositionsCount(input, 30)).toEqual(16);
   });
 });

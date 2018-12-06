@@ -162,3 +162,34 @@ export const getWidestSurface = (input: string[]): number => {
     return Math.max(surface, max);
   }, 0);
 };
+
+export const isCloseEnoughToOthers = (
+  positions: Array<Position>,
+  x,
+  y,
+  limit: number = 10000
+): boolean => {
+  const allDistances = positions.reduce(
+    (totalDistance, pos) => totalDistance + getDistanceToPosition(pos, x, y),
+    0
+  );
+  return allDistances <= limit;
+};
+
+export const getCloseToOthersPositionsCount = (
+  input: string[],
+  limit: number = 10000
+): number => {
+  const positions = getPositions(input);
+  const grid = getGridWithClosestPositions(positions);
+
+  let count = 0;
+  for (let y = 0; y < grid.length; y++) {
+    for (let x = 0; x < grid[y].length; x++) {
+      if (isCloseEnoughToOthers(positions, x, y, limit)) {
+        count += 1;
+      }
+    }
+  }
+  return count;
+};
