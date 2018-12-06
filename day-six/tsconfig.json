@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "outDir": "./built",
+    "allowJs": true,
+    "target": "es6",
+    "module": "commonjs"
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["**/__tests__/*.test.ts"],
+  "lib": ["es2016", "es2017"]
+}
